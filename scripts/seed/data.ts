@@ -296,7 +296,7 @@ export const projects: readonly Project[] = [
       "A no-code platform for building and publishing interactive 3D experiences without an engineer.",
     year: "2026",
     role: "Fullstack Engineer",
-    stack: ["Next.js", "Three.js"],
+    stack: ["TanStack Start", "Three.js"],
     company: "WE WEAR",
     companyUrl: "https://wewear.tech/en",
     liveUrl: "https://wewear.tech/en/3d-configurator",
