@@ -35,7 +35,7 @@ export const profile = {
     [
       { text: "I'm a software engineer in Italy. Currently I work at " },
       {
-        text: "Clover Orthopedics",
+        text: "Clover Next",
         href: "https://cloverorthopedics.com/en/home-en/",
       },
       {
@@ -189,7 +189,7 @@ export const stack: readonly {
 export const experience: readonly Job[] = [
   {
     role: "Software Engineer",
-    company: "Clover Orthopedics",
+    company: "Clover Next",
     start: "2026-07",
     href: "https://cloverorthopedics.com/en/home-en/",
     summary:

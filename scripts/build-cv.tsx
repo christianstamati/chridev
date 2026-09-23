@@ -373,4 +373,6 @@ await payload.updateGlobal({
   context: { disableRevalidate: true },
 })
 rmSync(out, { force: true })
-console.log(`uploaded ${pdf.url} and set it as the profile CV`)
+// Read it back: the storage plugin renames the file after `create` returns.
+const { url } = await payload.findByID({ collection: "media", id: pdf.id })
+console.log(`uploaded ${url} and set it as the profile CV`)

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s · Christian Stamati",
   },
   description:
-    "Software engineer in Italy. Clinical software at Clover Orthopedics, and real-time 3D for the web. Next.js, TypeScript, Three.js, Unreal Engine.",
+    "Software engineer in Italy. Clinical software at Clover Next, and real-time 3D for the web. Next.js, TypeScript, Three.js, Unreal Engine.",
 }
 
 export default function RootLayout({
