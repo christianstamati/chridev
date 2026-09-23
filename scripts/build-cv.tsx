@@ -56,6 +56,16 @@ const [profile, contact, projects, resume] = await Promise.all([
 ])
 const { skills, stack, experience, education, languages } = resume
 
+/**
+ * The most recent projects only, newest first. The rest stay on the site. A
+ * tie keeps the site's order, since the sort is stable, and a project with no
+ * year goes last.
+ */
+const CV_PROJECTS = 3
+const recent = [...projects]
+  .sort((a, b) => (b.year ?? "").localeCompare(a.year ?? ""))
+  .slice(0, CV_PROJECTS)
+
 const CHROME =
   process.env.CHROME ??
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
@@ -149,7 +159,7 @@ function Cv() {
       </Section>
 
       <Section title="Projects">
-        {projects.map((project) => {
+        {recent.map((project) => {
           const caseStudy = `${profile.url}/projects/${project.slug}`
           // The company only when it adds something: HRX's is its title.
           const meta = [

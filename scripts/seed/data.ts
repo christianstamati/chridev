@@ -430,7 +430,7 @@ export const projects: readonly Project[] = [
     coverVideo: clip("modesto-bertotto", "overview"),
     excerpt:
       "A wedding suit configurator with cloud-rendered fabric and a wizard that narrows the catalogue before you start.",
-    year: "2025",
+    year: "2023",
     stack: ["Unreal Engine", "Next.js"],
     company: "WE WEAR",
     companyUrl: "https://wewear.tech/en",
@@ -650,7 +650,8 @@ export const projects: readonly Project[] = [
     coverVideo: clip("hrx", "overview"),
     excerpt:
       "A made-to-order race suit configurator. Sponsors, flags and lettering, priced as you place them.",
-    // TODO(chris): year and duration. Omitted so the meta grid skips them.
+    year: "2024",
+    // TODO(chris): duration. Omitted so the meta grid skips it.
     role: "Unreal Engine Developer",
     stack: ["Unreal Engine", "WebSockets", "Payload CMS"],
     company: "HRX",
