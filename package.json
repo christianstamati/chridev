@@ -26,6 +26,7 @@
     "@payloadcms/storage-vercel-blob": "4.0.0-canary.36",
     "@payloadcms/ui": "4.0.0-canary.36",
     "@tabler/icons-react": "^3.46.0",
+    "@vercel/analytics": "^2.0.1",
     "cn": "^0.3.0",
     "graphql": "^16",
     "motion": "^13.2.0",

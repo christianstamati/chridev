@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import type { Metadata } from "next"
 import { Geist } from "next/font/google"
 
@@ -32,6 +33,8 @@ export default function RootLayout({
     >
       <body className="shell font-sans">
         <ThemeProvider>{children}</ThemeProvider>
+        {/* Page views for the site only; the admin has its own root layout. */}
+        <Analytics />
       </body>
     </html>
   )
