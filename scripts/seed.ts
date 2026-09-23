@@ -154,7 +154,12 @@ await payload.updateGlobal({
       group,
       items: items.map((item) => ({ ...item })),
     })),
-    experience: experience.map((job) => ({ ...job })),
+    // A list of points is stored one per line, which is how /admin edits it.
+    experience: experience.map((job) => ({
+      ...job,
+      summary:
+        typeof job.summary === "string" ? job.summary : job.summary.join("\n"),
+    })),
     education: education.map((school) => ({ ...school })),
     languages: languages.map((language) => ({ ...language })),
   },

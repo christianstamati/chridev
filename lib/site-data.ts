@@ -54,7 +54,8 @@ export type Job = {
   end?: string
   /** The company's site. Omit it and the name renders as plain text. */
   href?: string
-  summary: string
+  /** One paragraph, or a list of points, which the site and CV bullet. */
+  summary: string | readonly string[]
 }
 
 /** CV only. The site does not list these. */

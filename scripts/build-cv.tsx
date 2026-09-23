@@ -135,7 +135,15 @@ function Cv() {
             <p className="meta">
               {job.company} | {jobPeriod(job, "month")}
             </p>
-            <p>{job.summary}</p>
+            {typeof job.summary === "string" ? (
+              <p>{job.summary}</p>
+            ) : (
+              <ul>
+                {job.summary.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            )}
           </article>
         ))}
       </Section>
@@ -283,6 +291,8 @@ strong { font-weight: 500; }
 .entry { break-inside: avoid; }
 .entry + .entry { margin-top: 3.4mm; }
 .entry p + p { margin-top: 0.8mm; }
+.entry ul { margin: 0.8mm 0 0; padding-left: 4mm; }
+.entry li + li { margin-top: 0.4mm; }
 .line + .line { margin-top: 1mm; }
 `
 

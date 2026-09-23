@@ -578,6 +578,9 @@ export interface Resume {
          * The company's site. Leave empty and the name renders as plain text.
          */
         href?: string | null;
+        /**
+         * One line is a paragraph. Put each point on its own line for a bulleted list.
+         */
         summary: string;
         id?: string | null;
       }[]

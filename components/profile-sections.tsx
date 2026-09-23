@@ -280,7 +280,15 @@ export async function Experience() {
             ) : (
               <span className="t-meta text-ink-muted">{job.company}</span>
             )}
-            <p className="t-meta mt-2 text-ink-muted">{job.summary}</p>
+            {typeof job.summary === "string" ? (
+              <p className="t-meta mt-2 text-ink-muted">{job.summary}</p>
+            ) : (
+              <ul className="t-meta mt-2 flex list-disc flex-col gap-1 pl-4 text-ink-muted">
+                {job.summary.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ol>

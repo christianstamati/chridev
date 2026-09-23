@@ -192,8 +192,11 @@ export const experience: readonly Job[] = [
     company: "Clover Next",
     start: "2026-07",
     href: "https://cloverorthopedics.com/en/home-en/",
-    summary:
-      "Building web applications for a cloud healthcare platform used by clinicians and patients. Clinical software sets a higher bar, so requirements, traceability and testing are part of shipping a feature rather than paperwork after it.",
+    summary: [
+      "Build web applications for a cloud healthcare platform used by clinicians and patients.",
+      "Help build the new platform on a modern stack designed to work well with AI tools.",
+      "Improve the team's developer experience.",
+    ],
   },
   {
     role: "Software Engineer",

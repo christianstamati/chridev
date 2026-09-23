@@ -118,7 +118,15 @@ export const Resume: GlobalConfig = {
                       "The company's site. Leave empty and the name renders as plain text.",
                   },
                 },
-                { name: "summary", type: "textarea", required: true },
+                {
+                  name: "summary",
+                  type: "textarea",
+                  required: true,
+                  admin: {
+                    description:
+                      "One line is a paragraph. Put each point on its own line for a bulleted list.",
+                  },
+                },
               ],
             },
           ],

@@ -31,6 +31,18 @@ function file(value: number | Media | null | undefined): Media {
   return value
 }
 
+/**
+ * One line is a paragraph. Several lines are a list of points, with any
+ * leading "-" or "•" typed in /admin dropped, since the list adds its own.
+ */
+function points(text: string): string | string[] {
+  const lines = text
+    .split("\n")
+    .map((line) => line.replace(/^\s*[-•*]\s*/, "").trim())
+    .filter(Boolean)
+  return lines.length > 1 ? lines : (lines[0] ?? "")
+}
+
 /** A blank line starts a new paragraph. */
 function prose(text: string): Prose {
   return text
@@ -128,7 +140,7 @@ export const getResume = cache(async (): Promise<Resume> => {
       start: job.start,
       end: opt(job.end),
       href: opt(job.href),
-      summary: job.summary,
+      summary: points(job.summary),
     })),
     education: (doc.education ?? []).map((school) => ({
       title: school.title,
