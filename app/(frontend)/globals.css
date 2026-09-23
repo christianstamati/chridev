@@ -1,0 +1,255 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+}
+
+.dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+}
+/* ---------------------------------------------------------------------------
+   Portfolio shell tokens. Geometry was measured off the reference layout at
+   1440x900; colour comes in a light and a dark set.
+
+   Three theme states are supported: an explicit choice stamps `.dark` (or
+   removes it) via next-themes, and the default "system" setting follows
+   prefers-color-scheme. Every colour is defined in :root first so nothing
+   depends on a media query alone.
+--------------------------------------------------------------------------- */
+
+@theme inline {
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-raised);
+    --color-hairline: var(--hairline);
+    --color-accent: var(--accent);
+    --color-accent-ink: var(--accent-ink);
+    --color-overlay-soft: var(--overlay-soft);
+    --color-overlay-hover: var(--overlay-hover);
+    --color-rule: var(--rule);
+    --color-media: var(--media-bg);
+}
+
+:root {
+    color-scheme: light;
+
+    /* --- light palette --- */
+    --surface: #ffffff;
+    --surface-raised: #f1f1f2;
+    --ink: #121212;
+    --ink-muted: #6b6b6b;          /* 5.4:1 on white */
+    --hairline: rgba(0, 0, 0, 0.10);
+
+    --accent: #0000ff;             /* solid button fill */
+    --accent-ink: #ffffff;         /* 8.6:1 on #0000ff */
+    --overlay-soft: rgba(0, 0, 0, 0.04);
+    --overlay-hover: rgba(0, 0, 0, 0.08);
+    --rule: rgba(0, 0, 0, 0.28);   /* link underlines */
+    --focus-ring: #121212;
+    --media-bg: #e9e9ea;           /* sits behind images while they load */
+
+
+    /* --- geometry (theme-independent) --- */
+    --pane-gutter: 20px;
+    --card-radius: 16px;
+    /* The profile avatar is tighter than the work cards, matching the
+       reference, where the two radii are deliberately different. */
+    --avatar-radius: 10px;
+    --grid-gap: 8px;
+    --section-gap: 60px;
+    --progress-h: 5px;
+}
+
+.dark {
+    color-scheme: dark;
+
+    --surface: #121212;
+    --surface-raised: #1c1c1c;
+    --ink: #ffffff;
+    --ink-muted: #ababab;          /* 8.2:1 on #121212 */
+    --hairline: rgba(255, 255, 255, 0.08);
+
+    --accent: #0000ff;
+    --accent-ink: #ffffff;
+    --overlay-soft: rgba(255, 255, 255, 0.04);
+    --overlay-hover: rgba(255, 255, 255, 0.12);
+    --rule: rgba(255, 255, 255, 0.30);
+    --focus-ring: #ffffff;
+    --media-bg: #000000;
+
+}
+
+@layer base {
+    /* Uniform optical tightening. The reference runs -0.03em across the scale. */
+    .shell {
+        background: var(--surface);
+        color: var(--ink);
+        letter-spacing: -0.03em;
+    }
+
+    /* Panes scroll independently; the page itself never scrolls on desktop. */
+    html.shell-root,
+    html.shell-root body {
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
+}
+
+@layer components {
+    /* Type scale: name, section heading, body, meta */
+    .t-name    { font-size: 24px; line-height: 1.1;  letter-spacing: -0.05em; font-weight: 500; }
+    .t-heading { font-size: 18px; line-height: 1.3;  font-weight: 500; }
+    .t-lead    { font-size: 20px; line-height: 1.3;  font-weight: 400; }
+    .t-body    { font-size: 16px; line-height: 1.4;  font-weight: 400; }
+    .t-meta    { font-size: 14px; line-height: 1.4;  font-weight: 400; }
+
+    /* Panes hide their scrollbar but stay scrollable and keyboard-focusable. */
+    .pane {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .pane::-webkit-scrollbar { width: 0; height: 0; }
+}
+
+/* Respect users who ask for less motion. Kills the hover ramps and reveals. */
+@media (prefers-reduced-motion: reduce) {
+    .motion-safe-only,
+    .motion-safe-only * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+
+    /* Reveals land finished rather than animating in. This has to be CSS: the
+       components render the same markup for everyone, because a JS branch on
+       matchMedia disagrees with the server and React will not patch a
+       mismatched `style` back off, which left the whole page at opacity 0
+       for readers who had asked for less motion. */
+    [data-reveal] {
+        opacity: 1 !important;
+        transform: none !important;
+        translate: none !important;
+    }
+}
+
+/* Touch fallback. Tailwind wraps every hover:/group-hover: utility in
+   @media (hover: hover), so on a phone or tablet the whole grid would sit
+   permanently grayscale and unlabeled. Where there is no hover, show the
+   finished state outright rather than hiding content behind a gesture that
+   cannot happen. */
+@media (hover: none) {
+    .card-media  { filter: grayscale(0); }
+    .card-scrim  { opacity: 1; }
+    .card-reveal { opacity: 1; translate: 0 0; }
+}
+
+/* Shared-element morph between a grid tile and its case-study lead image.
+   `share="morph"` on both <ViewTransition>s assigns this class, so these
+   rules target only that pair, not every navigation. */
+::view-transition-group(.morph) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-image-pair(.morph) {
+    animation-name: morph-blur;
+}
+
+/* A touch of blur mid-flight hides the pixel interpolation you'd otherwise see
+   while the aspect ratio changes between the tile and the hero. */
+@keyframes morph-blur {
+    30% {
+        filter: blur(3px);
+    }
+}
+
+/* Never trade motion sickness for polish. */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
