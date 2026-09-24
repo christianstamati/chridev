@@ -149,7 +149,7 @@ export async function Intro() {
 export async function About() {
   const profile = await getProfile()
   return (
-    <Section heading="About me." id="about">
+    <Section heading="About me" id="about">
       {/* Direct children of Section, so each paragraph picks up its gap-4. */}
       {profile.about.map((paragraph) => (
         <p
@@ -166,7 +166,7 @@ export async function About() {
 export async function Skills() {
   const { skills } = await getResume()
   return (
-    <Section heading="Skills." id="skills">
+    <Section heading="Skills" id="skills">
       <div className="flex flex-col gap-7">
         {skills.map((group, i) => (
           <div key={group.title} className="flex gap-4">
@@ -255,7 +255,7 @@ export async function StackMarquee() {
 export async function Experience() {
   const { experience } = await getResume()
   return (
-    <Section heading="Experience." id="experience">
+    <Section heading="Experience" id="experience">
       <ol className="flex flex-col gap-7">
         {experience.map((job) => (
           <li key={`${job.role}-${job.start}`} className="flex flex-col gap-1">

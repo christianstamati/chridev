@@ -246,7 +246,7 @@ export const languages = [
 ] as const
 
 export const contact = {
-  heading: "Reach out.",
+  heading: "Reach out",
   blurb:
     "Open to interesting problems in product engineering or real-time 3D. Email is the fastest way to reach me.",
   email: "hello@chri.dev",
