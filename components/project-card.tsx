@@ -52,13 +52,19 @@ export function ProjectCard({ project }: { project: Project }) {
         share="morph"
         default="none"
       >
-        <Image
-          src={project.cover}
-          alt=""
-          fill
-          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
-          className="card-media object-cover grayscale transition-[filter,scale] duration-500 ease-out group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-visible:grayscale-0"
-        />
+        {/* Rounded itself, not only clipped by the tile: the morph snapshots
+            this element, and the corners have to travel with it. Switching
+            language keeps the grid on screen, so every tile morphs into
+            itself, and a bare image would square off for the whole morph. */}
+        <div className="absolute inset-0 overflow-hidden rounded-(--card-radius)">
+          <Image
+            src={project.cover}
+            alt=""
+            fill
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
+            className="card-media object-cover grayscale transition-[filter,scale] duration-500 ease-out group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-visible:grayscale-0"
+          />
+        </div>
       </ViewTransition>
 
       {project.coverVideo && (
