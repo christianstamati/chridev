@@ -20,6 +20,7 @@ import {
 } from "react"
 import { createPortal } from "react-dom"
 
+import type { Dictionary } from "@/lib/dictionary"
 import type { CaseMedia } from "@/lib/site-data"
 import { cn } from "@/lib/utils"
 
@@ -111,10 +112,13 @@ function CursorDisc({
  */
 export function CaseFrame({
   media,
+  labels,
   priority = false,
   sizes = "(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw",
 }: {
   media: CaseMedia
+  /** Screen-reader names for the frame's buttons, in the page's language. */
+  labels: Dictionary["media"]
   priority?: boolean
   sizes?: string
 }) {
@@ -257,7 +261,9 @@ export function CaseFrame({
         onPointerLeave={pointer.forget}
         className="group absolute inset-0 cursor-zoom-in pointer-fine:cursor-none focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:-outline-offset-4"
       >
-        <span className="sr-only">Enlarge: {media.alt}</span>
+        <span className="sr-only">
+          {labels.enlarge}: {media.alt}
+        </span>
         <CursorDisc
           x={pointer.x}
           y={pointer.y}
@@ -281,7 +287,9 @@ export function CaseFrame({
           onClick={play}
           className="absolute inset-0 hidden place-items-center bg-black/20 text-white transition-colors hover:bg-black/30 focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2 motion-reduce:grid"
         >
-          <span className="sr-only">Play clip: {media.alt}</span>
+          <span className="sr-only">
+            {labels.playClip}: {media.alt}
+          </span>
           <span className="grid size-11 place-items-center rounded-full bg-black/55 backdrop-blur-sm">
             <IconPlayerPlay size={16} aria-hidden />
           </span>
@@ -292,6 +300,7 @@ export function CaseFrame({
         createPortal(
           <Lightbox
             media={media}
+            closeLabel={labels.close}
             name={name}
             sizes={sizes}
             startAt={clipTime.current}
@@ -315,6 +324,7 @@ export function CaseFrame({
  */
 function Lightbox({
   media,
+  closeLabel,
   name,
   sizes,
   startAt,
@@ -322,6 +332,7 @@ function Lightbox({
   onClose,
 }: {
   media: CaseMedia
+  closeLabel: string
   name: string
   sizes: string
   startAt: number
@@ -445,7 +456,7 @@ function Lightbox({
         onPointerLeave={() => setOverClose(false)}
         className="absolute top-4 right-4 grid size-10 cursor-pointer place-items-center rounded-full bg-surface-raised text-ink transition-colors hover:bg-overlay-hover focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
       >
-        <span className="sr-only">Close</span>
+        <span className="sr-only">{closeLabel}</span>
         <IconX size={18} aria-hidden />
       </button>
 

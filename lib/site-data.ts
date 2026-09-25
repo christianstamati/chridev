@@ -4,6 +4,8 @@
  * component ever sees a Payload document.
  */
 
+import { DICTIONARIES } from "@/lib/dictionary"
+import type { Locale } from "@/lib/i18n"
 import type { StackIcon } from "@/lib/stack-icons"
 
 /**
@@ -84,34 +86,24 @@ export type Resume = {
   languages: Language[]
 }
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-]
-
 /**
  * "2021–2026" for the site, "Apr 2021 - Jun 2026" for the CV. A job inside one
  * year prints that year once on the site, since "2021–2021" says nothing. The
  * CV takes a plain hyphen rather than the en dash: some applicant tracking
  * systems do not read the dash as a range.
  */
-export function jobPeriod(job: Job, precision: "year" | "month") {
+export function jobPeriod(
+  job: Job,
+  precision: "year" | "month",
+  locale: Locale
+) {
+  const { months, present } = DICTIONARIES[locale]
   const fmt = (date: string) => {
     const [year, month] = date.split("-")
-    return precision === "year" ? year : `${MONTHS[Number(month) - 1]} ${year}`
+    return precision === "year" ? year : `${months[Number(month) - 1]} ${year}`
   }
   const start = fmt(job.start)
-  const end = job.end ? fmt(job.end) : "Present"
+  const end = job.end ? fmt(job.end) : present
   if (precision === "year") return start === end ? start : `${start}–${end}`
   return `${start} - ${end}`
 }

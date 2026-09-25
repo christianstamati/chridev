@@ -10,6 +10,7 @@ function prose(name: string, required: boolean, description?: string): Field {
     name,
     type: "textarea",
     required,
+    localized: true,
     admin: {
       description: description ?? "A blank line starts a new paragraph.",
       rows: 8,
@@ -33,7 +34,7 @@ export const Projects: CollectionConfig = {
     afterDelete: [revalidateAfterDelete],
   },
   fields: [
-    { name: "title", type: "text", required: true },
+    { name: "title", type: "text", required: true, localized: true },
     {
       name: "slug",
       type: "text",
@@ -47,13 +48,14 @@ export const Projects: CollectionConfig = {
       type: "text",
       hasMany: true,
       required: true,
+      localized: true,
       minRows: 1,
       admin: {
         description:
           "Most telling first. The grid tile has room for one, so it shows the first.",
       },
     },
-    { name: "excerpt", type: "textarea", required: true },
+    { name: "excerpt", type: "textarea", required: true, localized: true },
     {
       type: "row",
       fields: [
@@ -72,9 +74,10 @@ export const Projects: CollectionConfig = {
         {
           name: "role",
           type: "text",
+          localized: true,
           admin: { description: "Your job on the project." },
         },
-        { name: "duration", type: "text" },
+        { name: "duration", type: "text", localized: true },
       ],
     },
     {
@@ -95,7 +98,7 @@ export const Projects: CollectionConfig = {
           type: "row",
           fields: [
             { name: "name", type: "text", required: true },
-            { name: "role", type: "text", required: true },
+            { name: "role", type: "text", required: true, localized: true },
           ],
         },
       ],
@@ -147,11 +150,13 @@ export const Projects: CollectionConfig = {
                 {
                   name: "title",
                   type: "text",
+                  localized: true,
                   admin: { description: "Names the feature." },
                 },
                 {
                   name: "text",
                   type: "text",
+                  localized: true,
                   admin: { description: "Says what it does." },
                 },
               ],

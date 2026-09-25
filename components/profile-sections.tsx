@@ -21,12 +21,14 @@ import {
   siUnrealengine,
   siWebgpu,
 } from "simple-icons"
+import { LocaleSwitch } from "@/components/locale-switch"
 import { Marquee } from "@/components/marquee"
 import { ScrollTopButton } from "@/components/scroll-top-button"
 import { SectionLink } from "@/components/section-link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Separator } from "@/components/ui/separator"
 import { getContact, getProfile, getResume } from "@/lib/content"
+import { getDictionary, getLocale } from "@/lib/locale"
 import { jobPeriod, type TextRun } from "@/lib/site-data"
 import type { StackIcon } from "@/lib/stack-icons"
 import { cn } from "@/lib/utils"
@@ -93,7 +95,8 @@ function Section({
 }
 
 export async function Intro() {
-  const profile = await getProfile()
+  const locale = await getLocale()
+  const [profile, t] = await Promise.all([getProfile(locale), getDictionary()])
   return (
     <section id="intro" className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -110,9 +113,10 @@ export async function Intro() {
           <span className="t-body text-ink-muted">{profile.role}</span>
         </div>
         {/* ml-auto keeps the avatar+name group left-aligned at the reference
-            offsets while the toggle sits on the far edge. */}
-        <div className="ml-auto">
-          <ThemeToggle />
+            offsets while the toggles sit on the far edge. */}
+        <div className="ml-auto flex items-center gap-2">
+          <LocaleSwitch label={t.language} />
+          <ThemeToggle labels={t.theme} />
         </div>
       </div>
 
@@ -127,18 +131,18 @@ export async function Intro() {
           to="contact"
           className="t-meta inline-flex w-fit items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-semibold text-accent-ink transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
         >
-          Get in touch
+          {t.intro.getInTouch}
           <IconMail size={15} aria-hidden />
         </SectionLink>
         {/* Secondary: same size as the primary, on the raised surface the Back
             pill uses instead of the accent. /cv redirects to whichever PDF the
-            profile holds now and asks the store to send it as a download, so a
-            rebuilt CV needs no redeploy. */}
+            profile holds now, in this page's language, and asks the store to
+            send it as a download, so a rebuilt CV needs no redeploy. */}
         <a
-          href="/cv"
+          href={`/${locale}/cv`}
           className="t-meta inline-flex w-fit items-center gap-1.5 rounded-full bg-surface-raised px-4 py-2 font-semibold text-ink transition-colors hover:bg-overlay-hover focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
         >
-          Download CV
+          {t.intro.downloadCv}
           <IconFileDownload size={15} aria-hidden />
         </a>
       </div>
@@ -147,9 +151,12 @@ export async function Intro() {
 }
 
 export async function About() {
-  const profile = await getProfile()
+  const [profile, t] = await Promise.all([
+    getProfile(await getLocale()),
+    getDictionary(),
+  ])
   return (
-    <Section heading="About me" id="about">
+    <Section heading={t.sections.about} id="about">
       {/* Direct children of Section, so each paragraph picks up its gap-4. */}
       {profile.about.map((paragraph) => (
         <p
@@ -164,9 +171,12 @@ export async function About() {
 }
 
 export async function Skills() {
-  const { skills } = await getResume()
+  const [{ skills }, t] = await Promise.all([
+    getResume(await getLocale()),
+    getDictionary(),
+  ])
   return (
-    <Section heading="Skills" id="skills">
+    <Section heading={t.sections.skills} id="skills">
       <div className="flex flex-col gap-7">
         {skills.map((group, i) => (
           <div key={group.title} className="flex gap-4">
@@ -221,7 +231,7 @@ const STACK_MARKS: Record<StackIcon, SimpleIcon> = {
  * out of the column. Not links, because dragging and clicking would fight.
  */
 export async function StackMarquee() {
-  const { stack } = await getResume()
+  const { stack } = await getResume(await getLocale())
   const tools = stack.flatMap((group) => group.items)
 
   return (
@@ -253,16 +263,20 @@ export async function StackMarquee() {
 }
 
 export async function Experience() {
-  const { experience } = await getResume()
+  const locale = await getLocale()
+  const [{ experience }, t] = await Promise.all([
+    getResume(locale),
+    getDictionary(),
+  ])
   return (
-    <Section heading="Experience" id="experience">
+    <Section heading={t.sections.experience} id="experience">
       <ol className="flex flex-col gap-7">
         {experience.map((job) => (
           <li key={`${job.role}-${job.start}`} className="flex flex-col gap-1">
             <div className="flex items-baseline justify-between gap-4">
               <h3 className="t-body text-ink">{job.role}</h3>
               <span className="t-meta shrink-0 text-ink-muted">
-                {jobPeriod(job, "year")}
+                {jobPeriod(job, "year", locale)}
               </span>
             </div>
             {/* The company name links out when the job carries an `href`.
@@ -297,7 +311,7 @@ export async function Experience() {
 }
 
 export async function Contact() {
-  const contact = await getContact()
+  const contact = await getContact(await getLocale())
   return (
     <Section heading={contact.heading} id="contact">
       <p className="t-body text-ink-muted">{contact.blurb}</p>
@@ -333,15 +347,18 @@ export async function Contact() {
 }
 
 export async function Footer() {
-  const profile = await getProfile()
+  const [profile, t] = await Promise.all([
+    getProfile(await getLocale()),
+    getDictionary(),
+  ])
   return (
     <footer className="flex flex-col pt-2">
       <Separator className="mb-5 bg-hairline" />
       <div className="flex items-center justify-between gap-4">
         <span className="t-meta text-ink-muted">
-          © {new Date().getFullYear()} {profile.name}. All rights reserved.
+          © {new Date().getFullYear()} {profile.name}. {t.footer.rights}
         </span>
-        <ScrollTopButton />
+        <ScrollTopButton label={t.footer.backToTop} />
       </div>
     </footer>
   )

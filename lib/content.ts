@@ -1,6 +1,7 @@
 import config from "@payload-config"
 import { getPayload } from "payload"
 import { cache } from "react"
+import type { Locale } from "@/lib/i18n"
 import { lexicalToRuns } from "@/lib/lexical-runs"
 import type {
   CaseMedia,
@@ -16,6 +17,9 @@ import type { Media, Project as ProjectDoc } from "@/payload-types"
  * Reads the site's content from Payload and hands it back in the shapes in
  * lib/site-data.ts, so components never see a Payload document. Each getter is
  * wrapped in `cache`, so a page and its metadata share one query per render.
+ *
+ * Every getter takes the locale. A field nobody has translated yet comes back
+ * in English, Payload's fallback, so a page is never missing words.
  */
 
 export const cms = () => getPayload({ config })
@@ -93,22 +97,27 @@ function project(doc: ProjectDoc): Project {
 }
 
 /** In the order set by dragging the list in /admin. */
-export const getProjects = cache(async (): Promise<Project[]> => {
+export const getProjects = cache(async (locale: Locale): Promise<Project[]> => {
   const { docs } = await (await cms()).find({
     collection: "projects",
     sort: "_order",
     pagination: false,
     depth: 1,
+    locale,
   })
   return docs.map(project)
 })
 
-export const getProject = cache(async (slug: string) =>
-  (await getProjects()).find((p) => p.slug === slug)
+export const getProject = cache(async (locale: Locale, slug: string) =>
+  (await getProjects(locale)).find((p) => p.slug === slug)
 )
 
-export const getProfile = cache(async (): Promise<Profile> => {
-  const doc = await (await cms()).findGlobal({ slug: "profile", depth: 1 })
+export const getProfile = cache(async (locale: Locale): Promise<Profile> => {
+  const doc = await (await cms()).findGlobal({
+    slug: "profile",
+    depth: 1,
+    locale,
+  })
   return {
     name: doc.name,
     role: doc.role,
@@ -122,8 +131,12 @@ export const getProfile = cache(async (): Promise<Profile> => {
   }
 })
 
-export const getResume = cache(async (): Promise<Resume> => {
-  const doc = await (await cms()).findGlobal({ slug: "resume", depth: 0 })
+export const getResume = cache(async (locale: Locale): Promise<Resume> => {
+  const doc = await (await cms()).findGlobal({
+    slug: "resume",
+    depth: 0,
+    locale,
+  })
   return {
     skills: (doc.skills ?? []).map(({ title, items }) => ({ title, items })),
     stack: (doc.stack ?? []).map(({ group, items }) => ({
@@ -155,8 +168,12 @@ export const getResume = cache(async (): Promise<Resume> => {
   }
 })
 
-export const getContact = cache(async (): Promise<Contact> => {
-  const doc = await (await cms()).findGlobal({ slug: "contact", depth: 0 })
+export const getContact = cache(async (locale: Locale): Promise<Contact> => {
+  const doc = await (await cms()).findGlobal({
+    slug: "contact",
+    depth: 0,
+    locale,
+  })
   return {
     heading: doc.heading,
     blurb: doc.blurb,

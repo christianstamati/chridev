@@ -2,6 +2,7 @@ import { Masonry } from "@/components/masonry"
 import { ProjectCard } from "@/components/project-card"
 import { RevealItem, RevealStagger } from "@/components/reveal"
 import { getProjects } from "@/lib/content"
+import { getLocale } from "@/lib/locale"
 
 /**
  * The work grid keeps "sequential" distribution so the column order stays
@@ -13,7 +14,7 @@ import { getProjects } from "@/lib/content"
  * the tiles arrive in authored order rather than column order.
  */
 export async function WorkGrid() {
-  const projects = await getProjects()
+  const projects = await getProjects(await getLocale())
   return (
     <RevealStagger step={0.06}>
       <Masonry

@@ -28,8 +28,19 @@ export const Resume: GlobalConfig = {
               type: "array",
               labels: { singular: "Skill group", plural: "Skill groups" },
               fields: [
-                { name: "title", type: "text", required: true },
-                { name: "items", type: "text", hasMany: true, required: true },
+                {
+                  name: "title",
+                  type: "text",
+                  required: true,
+                  localized: true,
+                },
+                {
+                  name: "items",
+                  type: "text",
+                  hasMany: true,
+                  required: true,
+                  localized: true,
+                },
               ],
             },
           ],
@@ -44,7 +55,12 @@ export const Resume: GlobalConfig = {
               type: "array",
               labels: { singular: "Group", plural: "Groups" },
               fields: [
-                { name: "group", type: "text", required: true },
+                {
+                  name: "group",
+                  type: "text",
+                  required: true,
+                  localized: true,
+                },
                 {
                   name: "items",
                   type: "array",
@@ -85,7 +101,12 @@ export const Resume: GlobalConfig = {
                 {
                   type: "row",
                   fields: [
-                    { name: "role", type: "text", required: true },
+                    {
+                      name: "role",
+                      type: "text",
+                      required: true,
+                      localized: true,
+                    },
                     { name: "company", type: "text", required: true },
                   ],
                 },
@@ -122,6 +143,7 @@ export const Resume: GlobalConfig = {
                   name: "summary",
                   type: "textarea",
                   required: true,
+                  localized: true,
                   admin: {
                     description:
                       "One line is a paragraph. Put each point on its own line for a bulleted list.",
@@ -142,7 +164,12 @@ export const Resume: GlobalConfig = {
                 {
                   type: "row",
                   fields: [
-                    { name: "title", type: "text", required: true },
+                    {
+                      name: "title",
+                      type: "text",
+                      required: true,
+                      localized: true,
+                    },
                     { name: "school", type: "text", required: true },
                     {
                       name: "period",
@@ -152,7 +179,7 @@ export const Resume: GlobalConfig = {
                     },
                   ],
                 },
-                { name: "detail", type: "text" },
+                { name: "detail", type: "text", localized: true },
               ],
             },
           ],
@@ -168,8 +195,18 @@ export const Resume: GlobalConfig = {
                 {
                   type: "row",
                   fields: [
-                    { name: "name", type: "text", required: true },
-                    { name: "level", type: "text", required: true },
+                    {
+                      name: "name",
+                      type: "text",
+                      required: true,
+                      localized: true,
+                    },
+                    {
+                      name: "level",
+                      type: "text",
+                      required: true,
+                      localized: true,
+                    },
                   ],
                 },
               ],

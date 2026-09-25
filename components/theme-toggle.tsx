@@ -4,6 +4,7 @@ import { IconMoon, IconSun } from "@tabler/icons-react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import type { Dictionary } from "@/lib/dictionary"
 
 /**
  * Flips between light and dark. Pressing `d` anywhere does the same thing
@@ -14,7 +15,7 @@ import { useEffect, useState } from "react"
  * hydration mismatch. Until then it renders a same-sized placeholder so the
  * header doesn't shift.
  */
-export function ThemeToggle() {
+export function ThemeToggle({ labels }: { labels: Dictionary["theme"] }) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const reduced = useReducedMotion()
@@ -29,11 +30,9 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={
-        mounted
-          ? `Switch to ${isDark ? "light" : "dark"} theme`
-          : "Switch theme"
+        mounted ? (isDark ? labels.toLight : labels.toDark) : labels.toggle
       }
-      title="Switch theme (d)"
+      title={labels.hint}
       whileTap={reduced ? undefined : { scale: 0.92 }}
       transition={{ duration: 0.15 }}
       className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-raised text-ink-muted transition-colors hover:bg-overlay-hover hover:text-ink focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"

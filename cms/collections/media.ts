@@ -29,6 +29,7 @@ export const Media: CollectionConfig = {
     {
       name: "alt",
       type: "text",
+      localized: true,
       admin: {
         description:
           "What the picture shows, for someone who cannot see it. Required on images.",

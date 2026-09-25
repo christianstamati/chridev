@@ -11,7 +11,7 @@ export const Profile: GlobalConfig = {
       type: "row",
       fields: [
         { name: "name", type: "text", required: true },
-        { name: "role", type: "text", required: true },
+        { name: "role", type: "text", required: true, localized: true },
       ],
     },
     {
@@ -21,6 +21,7 @@ export const Profile: GlobalConfig = {
           name: "location",
           type: "text",
           required: true,
+          localized: true,
           admin: { description: "CV only." },
         },
         {
@@ -38,6 +39,7 @@ export const Profile: GlobalConfig = {
       name: "intro",
       type: "richText",
       required: true,
+      localized: true,
       editor: runsEditor,
       admin: {
         description:
@@ -48,6 +50,7 @@ export const Profile: GlobalConfig = {
       name: "about",
       type: "richText",
       required: true,
+      localized: true,
       editor: runsEditor,
       admin: { description: "Company names can link out." },
     },
@@ -63,6 +66,7 @@ export const Profile: GlobalConfig = {
       type: "upload",
       relationTo: "media",
       required: true,
+      localized: true,
       filterOptions: { mimeType: { equals: "application/pdf" } },
       admin: {
         description:

@@ -10,6 +10,7 @@
         "@payloadcms/next": "4.0.0-canary.36",
         "@payloadcms/richtext-lexical": "4.0.0-canary.36",
         "@payloadcms/storage-vercel-blob": "4.0.0-canary.36",
+        "@payloadcms/translations": "4.0.0-canary.36",
         "@payloadcms/ui": "4.0.0-canary.36",
         "@tabler/icons-react": "^3.46.0",
         "@vercel/analytics": "^2.0.1",

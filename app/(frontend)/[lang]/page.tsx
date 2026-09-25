@@ -1,4 +1,5 @@
 import { IconArrowRight, IconLayoutGrid, IconUser } from "@tabler/icons-react"
+import type { Metadata } from "next"
 import {
   About,
   Contact,
@@ -12,6 +13,7 @@ import { Reveal } from "@/components/reveal"
 import { SectionLink } from "@/components/section-link"
 import { TwoPaneShell } from "@/components/two-pane-shell"
 import { WorkGrid } from "@/components/work-grid"
+import { alternates, getDictionary } from "@/lib/locale"
 
 /** Sections rendered in the left pane. Drives `#hash` routing between panes. */
 const PROFILE_SECTIONS = [
@@ -22,13 +24,18 @@ const PROFILE_SECTIONS = [
   "contact",
 ] as const
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: await alternates("") }
+}
+
+export default async function Home() {
+  const t = await getDictionary()
   return (
     <TwoPaneShell
-      leftLabel="Profile"
-      rightLabel="Selected work"
-      leftTab="About"
-      rightTab="Work"
+      leftLabel={t.home.profile}
+      rightLabel={t.home.work}
+      leftTab={t.home.aboutTab}
+      rightTab={t.home.workTab}
       leftIcon={<IconUser size={16} aria-hidden />}
       rightIcon={<IconLayoutGrid size={16} aria-hidden />}
       leftSectionIds={PROFILE_SECTIONS}
@@ -76,7 +83,7 @@ export default function Home() {
               to="contact"
               className="t-meta inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-semibold text-accent-ink transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
             >
-              Start a project
+              {t.startProject}
               <IconArrowRight size={15} aria-hidden />
             </SectionLink>
           </div>

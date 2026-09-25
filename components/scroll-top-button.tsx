@@ -10,14 +10,14 @@ import { useRef } from "react"
  * because each pane is its own overflow container, so this walks up to the
  * nearest `.pane` ancestor and scrolls that instead.
  */
-export function ScrollTopButton() {
+export function ScrollTopButton({ label }: { label: string }) {
   const ref = useRef<HTMLButtonElement | null>(null)
 
   return (
     <button
       ref={ref}
       type="button"
-      aria-label="Back to top"
+      aria-label={label}
       onClick={() => {
         const pane = ref.current?.closest(".pane")
         pane?.scrollTo({ top: 0, behavior: "smooth" })

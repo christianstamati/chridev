@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url"
 import { vercelPostgresAdapter } from "@payloadcms/db-vercel-postgres"
 import { lexicalEditor } from "@payloadcms/richtext-lexical"
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob"
+import { en } from "@payloadcms/translations/languages/en"
+import { it } from "@payloadcms/translations/languages/it"
 import { buildConfig } from "payload"
 import { Media } from "@/cms/collections/media"
 import { Projects } from "@/cms/collections/projects"
@@ -10,6 +12,7 @@ import { Users } from "@/cms/collections/users"
 import { Contact } from "@/cms/globals/contact"
 import { Profile } from "@/cms/globals/profile"
 import { Resume } from "@/cms/globals/resume"
+import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES } from "@/lib/i18n"
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -20,6 +23,20 @@ export default buildConfig({
   },
   collections: [Projects, Media, Users],
   globals: [Profile, Resume, Contact],
+  // The admin's own interface. It follows the browser's language, and each
+  // editor can change it in their account.
+  i18n: {
+    supportedLanguages: { en, it },
+    fallbackLanguage: DEFAULT_LOCALE,
+  },
+  // The content. Fields marked `localized` hold one value per locale, and an
+  // empty one falls back to English, so a new project shows up in Italian
+  // before anyone has translated it.
+  localization: {
+    locales: LOCALES.map((code) => ({ code, label: LOCALE_NAMES[code] })),
+    defaultLocale: DEFAULT_LOCALE,
+    fallback: true,
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },

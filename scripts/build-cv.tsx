@@ -2,12 +2,14 @@
  * Builds the PDF behind the "Download CV" button from the content in Payload,
  * so the CV says exactly what the site says and changes when it does.
  *
- * Usage:  bun run cv
- * Writes: a new file in the media collection, then points the profile's `cv`
- *         at it. Every upload gets its own URL, so no cache serves the old
- *         one, and /cv follows the profile, so there is nothing to redeploy.
- *         Over the page limit it uploads nothing and leaves the PDF in the
- *         temp directory to look at.
+ * Usage:  bun run cv          every language the site speaks
+ *         bun run cv it       only the ones named
+ * Writes: one PDF per language, each a new file in the media collection,
+ *         then points the profile's `cv` in that language at it. Every upload
+ *         gets its own URL, so no cache serves the old one, and /<lang>/cv
+ *         follows the profile, so there is nothing to redeploy. If any PDF
+ *         runs over the page limit it uploads none of them and leaves the
+ *         PDFs in the temp directory to look at.
  * Needs:  Google Chrome, which prints the page. Set CHROME if it is not in
  *         /Applications. A network connection, for the Geist font file.
  *         The database and Blob env vars, as for `bun run dev`.
@@ -46,15 +48,16 @@ import {
   getProjects,
   getResume,
 } from "@/lib/content"
+import { DICTIONARIES } from "@/lib/dictionary"
+import { isLocale, LOCALES, type Locale } from "@/lib/i18n"
 import { jobPeriod } from "@/lib/site-data"
 
-const [profile, contact, projects, resume] = await Promise.all([
-  getProfile(),
-  getContact(),
-  getProjects(),
-  getResume(),
-])
-const { skills, stack, experience, education, languages } = resume
+const named = process.argv.slice(2)
+const unknown = named.filter((arg) => !isLocale(arg))
+if (unknown.length > 0) {
+  throw new Error(`Unknown language ${unknown.join(", ")}. Use ${LOCALES}.`)
+}
+const locales = named.length > 0 ? (named as Locale[]) : LOCALES
 
 /**
  * The most recent projects only, newest first. The rest stay on the site. A
@@ -62,9 +65,20 @@ const { skills, stack, experience, education, languages } = resume
  * year goes last.
  */
 const CV_PROJECTS = 3
-const recent = [...projects]
-  .sort((a, b) => (b.year ?? "").localeCompare(a.year ?? ""))
-  .slice(0, CV_PROJECTS)
+
+/** Everything one CV prints, in one language. */
+async function content(locale: Locale) {
+  const [profile, contact, projects, resume] = await Promise.all([
+    getProfile(locale),
+    getContact(locale),
+    getProjects(locale),
+    getResume(locale),
+  ])
+  const recent = [...projects]
+    .sort((a, b) => (b.year ?? "").localeCompare(a.year ?? ""))
+    .slice(0, CV_PROJECTS)
+  return { locale, profile, contact, recent, resume }
+}
 
 const CHROME =
   process.env.CHROME ??
@@ -103,7 +117,15 @@ function Line({ label, items }: { label: string; items: readonly string[] }) {
   )
 }
 
-function Cv() {
+function Cv({
+  locale,
+  profile,
+  contact,
+  recent,
+  resume,
+}: Awaited<ReturnType<typeof content>>) {
+  const t = DICTIONARIES[locale].cv
+  const { skills, stack, experience, education, languages } = resume
   const socials = ["LinkedIn", "GitHub"].flatMap((label) =>
     contact.socials.filter((s) => s.label === label)
   )
@@ -128,7 +150,7 @@ function Cv() {
         </p>
       </header>
 
-      <Section title="Summary">
+      <Section title={t.summary}>
         <p className="intro">
           {profile.intro.map((run) => (
             <span key={run.text} className={run.dim ? "dim" : undefined}>
@@ -138,12 +160,12 @@ function Cv() {
         </p>
       </Section>
 
-      <Section title="Experience">
+      <Section title={t.experience}>
         {experience.map((job) => (
           <article key={`${job.role}-${job.start}`} className="entry">
             <h3>{job.role}</h3>
             <p className="meta">
-              {job.company} | {jobPeriod(job, "month")}
+              {job.company} | {jobPeriod(job, "month", locale)}
             </p>
             {typeof job.summary === "string" ? (
               <p>{job.summary}</p>
@@ -158,9 +180,9 @@ function Cv() {
         ))}
       </Section>
 
-      <Section title="Projects">
+      <Section title={t.projects}>
         {recent.map((project) => {
-          const caseStudy = `${profile.url}/projects/${project.slug}`
+          const caseStudy = `${profile.url}/${locale}/projects/${project.slug}`
           // The company only when it adds something: HRX's is its title.
           const meta = [
             project.company !== project.title && project.company,
@@ -177,20 +199,20 @@ function Cv() {
               {/* The case study only. It links onward to the live product
                   where there is one, so the CV does not repeat it. */}
               <p className="meta">
-                Case study: <Url href={caseStudy} />
+                {t.caseStudy}: <Url href={caseStudy} />
               </p>
             </article>
           )
         })}
       </Section>
 
-      <Section title="Skills">
+      <Section title={t.skills}>
         {skills.map((group) => (
           <Line key={group.title} label={group.title} items={group.items} />
         ))}
       </Section>
 
-      <Section title="Technologies">
+      <Section title={t.technologies}>
         {stack.map((group) => (
           <Line
             key={group.group}
@@ -200,7 +222,7 @@ function Cv() {
         ))}
       </Section>
 
-      <Section title="Education">
+      <Section title={t.education}>
         {education.map((school) => (
           <article key={school.title} className="entry">
             <h3>{school.title}</h3>
@@ -212,7 +234,7 @@ function Cv() {
         ))}
       </Section>
 
-      <Section title="Languages">
+      <Section title={t.languages}>
         <p>
           {languages
             .map((l) => `${l.name} (${l.level.toLowerCase()})`)
@@ -306,16 +328,6 @@ strong { font-weight: 500; }
 .line + .line { margin-top: 1mm; }
 `
 
-const html = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>${profile.name} CV</title>
-<style>${CSS}</style>
-</head>
-<body>${renderToStaticMarkup(<Cv />)}</body>
-</html>`
-
 /** Resolves once `path` exists and has stopped growing. */
 async function settled(path: string, timeoutMs: number) {
   const deadline = Date.now() + timeoutMs
@@ -329,70 +341,99 @@ async function settled(path: string, timeoutMs: number) {
   throw new Error(`Chrome did not write ${path} in ${timeoutMs / 1000}s`)
 }
 
-// Outside `work`, which goes when Chrome is done, so an over-long PDF can
-// still be opened.
-const date = new Date().toISOString().slice(0, 10)
-const name = profile.name.toLowerCase().replaceAll(" ", "-")
-const out = join(tmpdir(), `${name}-cv-${date}.pdf`)
-const page = join(work, "cv.html")
-writeFileSync(page, html)
-// Otherwise `settled` could pick up the last build before Chrome replaces it.
-rmSync(out, { force: true })
+/** Prints one language's CV to a PDF and counts its pages. */
+async function print(cv: Awaited<ReturnType<typeof content>>) {
+  const title = DICTIONARIES[cv.locale].cv.title(cv.profile.name)
+  const html = `<!doctype html>
+<html lang="${cv.locale}">
+<head>
+<meta charset="utf-8">
+<title>${title}</title>
+<style>${CSS}</style>
+</head>
+<body>${renderToStaticMarkup(<Cv {...cv} />)}</body>
+</html>`
 
-// Its own profile directory, so a Chrome you have open does not get in the
-// way. Local fonts hold the load event, and Chrome prints after it.
-const chrome = spawn(
-  CHROME,
-  [
-    "--headless=new",
-    "--disable-gpu",
-    "--no-pdf-header-footer",
-    `--user-data-dir=${join(work, "profile")}`,
-    `--print-to-pdf=${out}`,
-    `file://${page}`,
-  ],
-  { stdio: "ignore" }
-)
-const exited = new Promise((resolve) => chrome.once("exit", resolve))
+  // Outside `work`, which goes when Chrome is done, so an over-long PDF can
+  // still be opened.
+  const date = new Date().toISOString().slice(0, 10)
+  const name = cv.profile.name.toLowerCase().replaceAll(" ", "-")
+  const out = join(tmpdir(), `${name}-cv-${cv.locale}-${date}.pdf`)
+  const page = join(work, `cv-${cv.locale}.html`)
+  writeFileSync(page, html)
+  // Otherwise `settled` could pick up the last build before Chrome replaces it.
+  rmSync(out, { force: true })
+
+  // Its own profile directory, so a Chrome you have open does not get in the
+  // way. Local fonts hold the load event, and Chrome prints after it.
+  const chrome = spawn(
+    CHROME,
+    [
+      "--headless=new",
+      "--disable-gpu",
+      "--no-pdf-header-footer",
+      `--user-data-dir=${join(work, "profile")}`,
+      `--print-to-pdf=${out}`,
+      `file://${page}`,
+    ],
+    { stdio: "ignore" }
+  )
+  const exited = new Promise((resolve) => chrome.once("exit", resolve))
+  try {
+    // Wait on the file, not the process: Chrome 154 writes the PDF and then
+    // never exits on its own, with or without any of the usual quieting flags.
+    await settled(out, 60_000)
+  } finally {
+    chrome.kill()
+    await exited
+  }
+
+  const pages =
+    readFileSync(out)
+      .toString("latin1")
+      .match(/\/Type\s*\/Page(?!s)/g)?.length ?? 0
+  console.log(`wrote ${out} (${pages} page${pages === 1 ? "" : "s"})`)
+  return { ...cv, title, out, pages }
+}
+
+const printed = []
 try {
-  // Wait on the file, not the process: Chrome 154 writes the PDF and then
-  // never exits on its own, with or without any of the usual quieting flags.
-  await settled(out, 60_000)
+  for (const locale of locales) printed.push(await print(await content(locale)))
 } finally {
-  chrome.kill()
-  await exited
   rmSync(work, { recursive: true, force: true })
 }
 
 // Two pages is normal for a CV a parser reads; a third usually means the copy
-// grew. Say so rather than letting it ship quietly.
+// grew. Say so rather than letting it ship quietly, and ship none of them, so
+// the languages never end up on CVs of different ages.
 const MAX_PAGES = 2
-const pages =
-  readFileSync(out)
-    .toString("latin1")
-    .match(/\/Type\s*\/Page(?!s)/g)?.length ?? 0
-console.log(`wrote ${out} (${pages} page${pages === 1 ? "" : "s"})`)
-if (pages > MAX_PAGES) {
-  console.error(`over ${MAX_PAGES} pages, so not uploaded`)
+const long = printed.filter((cv) => cv.pages > MAX_PAGES)
+if (long.length > 0) {
+  for (const cv of long) console.error(`${cv.out} is over ${MAX_PAGES} pages`)
+  console.error("nothing uploaded")
   process.exit(1)
 }
 
-// Revalidation needs a Next request, and /cv reads the profile per request
-// anyway, so there is nothing to revalidate.
+// Revalidation needs a Next request, and /<lang>/cv reads the profile per
+// request anyway, so there is nothing to revalidate.
 // A fresh context per call: the storage plugin flags the object it is handed.
 const payload = await cms()
-const pdf = await payload.create({
-  collection: "media",
-  data: { alt: `${profile.name} CV` },
-  filePath: out,
-  context: { disableRevalidate: true },
-})
-await payload.updateGlobal({
-  slug: "profile",
-  data: { cv: pdf.id },
-  context: { disableRevalidate: true },
-})
-rmSync(out, { force: true })
-// Read it back: the storage plugin renames the file after `create` returns.
-const { url } = await payload.findByID({ collection: "media", id: pdf.id })
-console.log(`uploaded ${url} and set it as the profile CV`)
+for (const cv of printed) {
+  const pdf = await payload.create({
+    collection: "media",
+    locale: cv.locale,
+    data: { alt: cv.title },
+    filePath: cv.out,
+    context: { disableRevalidate: true },
+  })
+  await payload.updateGlobal({
+    slug: "profile",
+    locale: cv.locale,
+    data: { cv: pdf.id },
+    context: { disableRevalidate: true },
+  })
+  rmSync(cv.out, { force: true })
+  // Read it back: the storage plugin renames the file after `create` returns.
+  const { url } = await payload.findByID({ collection: "media", id: pdf.id })
+  console.log(`uploaded ${url} and set it as the ${cv.locale} profile CV`)
+}

@@ -10,6 +10,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ViewTransition } from "react"
 import { CaseFrame } from "@/components/case-media"
+import { LocaleSwitch } from "@/components/locale-switch"
 import { Masonry } from "@/components/masonry"
 import { Contact, Footer } from "@/components/profile-sections"
 import { Reveal } from "@/components/reveal"
@@ -17,21 +18,24 @@ import { SectionLink } from "@/components/section-link"
 import { TwoPaneShell } from "@/components/two-pane-shell"
 import { Separator } from "@/components/ui/separator"
 import { getProject, getProjects } from "@/lib/content"
+import { alternates, getDictionary, getLocale } from "@/lib/locale"
 import type { Prose } from "@/lib/site-data"
 
 export async function generateStaticParams() {
-  return (await getProjects()).map((p) => ({ slug: p.slug }))
+  return (await getProjects(await getLocale())).map((p) => ({ slug: p.slug }))
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+}: PageProps<"/[lang]/projects/[slug]">): Promise<Metadata> {
   const { slug } = await params
-  const project = await getProject(slug)
+  const project = await getProject(await getLocale(), slug)
   if (!project) return {}
-  return { title: project.title, description: project.excerpt }
+  return {
+    title: project.title,
+    description: project.excerpt,
+    alternates: await alternates(`/projects/${slug}`),
+  }
 }
 
 /** A meta-grid value as a list: nothing, one value or several. */
@@ -85,11 +89,13 @@ const CASE_SECTIONS = [
 
 export default async function ProjectPage({
   params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+}: PageProps<"/[lang]/projects/[slug]">) {
   const { slug } = await params
-  const project = await getProject(slug)
+  const locale = await getLocale()
+  const [project, t] = await Promise.all([
+    getProject(locale, slug),
+    getDictionary(),
+  ])
   if (!project) notFound()
 
   // Every row is a list, so a single value and several render the same way.
@@ -97,23 +103,23 @@ export default async function ProjectPage({
   // the row stays level.
   const meta = [
     {
-      label: "Company",
+      label: t.project.company,
       values: list(project.company),
       href: project.companyUrl,
     },
-    { label: "Year", values: list(project.year) },
-    { label: "Category", values: list(project.categories) },
-    { label: "Stack", values: list(project.stack) },
-    { label: "Role", values: list(project.role) },
-    { label: "Duration", values: list(project.duration) },
+    { label: t.project.year, values: list(project.year) },
+    { label: t.project.category, values: list(project.categories) },
+    { label: t.project.stack, values: list(project.stack) },
+    { label: t.project.role, values: list(project.role) },
+    { label: t.project.duration, values: list(project.duration) },
   ].filter((m) => m.values.length > 0)
 
   return (
     <TwoPaneShell
-      leftLabel={`${project.title} details`}
-      rightLabel={`${project.title} images`}
-      leftTab="Details"
-      rightTab="Images"
+      leftLabel={t.project.details(project.title)}
+      rightLabel={t.project.images(project.title)}
+      leftTab={t.project.detailsTab}
+      rightTab={t.project.imagesTab}
       leftIcon={<IconFileText size={16} aria-hidden />}
       rightIcon={<IconPhoto size={16} aria-hidden />}
       leftSectionIds={CASE_SECTIONS}
@@ -126,13 +132,16 @@ export default async function ProjectPage({
                 surface with the mobile pane toggle. shadcn's `secondary`
                 variant isn't used here: the shell never sets the `.dark` class,
                 so that token resolves to the light palette and renders white. */}
-            <Link
-              href="/#work"
-              className="t-meta inline-flex w-fit items-center gap-2 rounded-full bg-surface-raised px-3 py-1.5 text-ink transition-colors hover:bg-overlay-hover focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
-            >
-              <IconArrowLeft size={13} aria-hidden />
-              Back
-            </Link>
+            <div className="flex items-center justify-between gap-4">
+              <Link
+                href={`/${locale}#work`}
+                className="t-meta inline-flex w-fit items-center gap-2 rounded-full bg-surface-raised px-3 py-1.5 text-ink transition-colors hover:bg-overlay-hover focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
+              >
+                <IconArrowLeft size={13} aria-hidden />
+                {t.project.back}
+              </Link>
+              <LocaleSwitch label={t.language} />
+            </div>
 
             <div className="flex flex-col gap-3">
               <h1 className="t-name text-ink">{project.title}</h1>
@@ -148,7 +157,7 @@ export default async function ProjectPage({
                 rel="noreferrer noopener"
                 className="t-meta inline-flex w-fit items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-semibold text-accent-ink transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
               >
-                Live preview
+                {t.project.live}
                 <IconArrowUpRight size={15} aria-hidden />
               </a>
             )}
@@ -189,7 +198,7 @@ export default async function ProjectPage({
               reads as a stutter. Everything below it is fair game. */}
           <Reveal>
             <section id="challenge" className="flex flex-col">
-              <h2 className="t-heading text-ink">Challenge</h2>
+              <h2 className="t-heading text-ink">{t.project.challenge}</h2>
               <Separator className="mt-2 mb-5 bg-hairline" />
               <Paragraphs text={project.challenge} />
             </section>
@@ -197,7 +206,7 @@ export default async function ProjectPage({
 
           <Reveal>
             <section id="solution" className="flex flex-col">
-              <h2 className="t-heading text-ink">Solution</h2>
+              <h2 className="t-heading text-ink">{t.project.solution}</h2>
               <Separator className="mt-2 mb-5 bg-hairline" />
               <Paragraphs text={project.solution} />
             </section>
@@ -206,7 +215,7 @@ export default async function ProjectPage({
           {project.results && (
             <Reveal>
               <section id="results" className="flex flex-col">
-                <h2 className="t-heading text-ink">Results</h2>
+                <h2 className="t-heading text-ink">{t.project.results}</h2>
                 <Separator className="mt-2 mb-5 bg-hairline" />
                 <Paragraphs text={project.results} />
               </section>
@@ -216,7 +225,7 @@ export default async function ProjectPage({
           {project.team && project.team.length > 0 && (
             <Reveal>
               <section id="team" className="flex flex-col">
-                <h2 className="t-heading text-ink">Team</h2>
+                <h2 className="t-heading text-ink">{t.project.team}</h2>
                 <Separator className="mt-2 mb-5 bg-hairline" />
                 <ul className="flex flex-col gap-2">
                   {project.team.map((member) => (
@@ -258,8 +267,10 @@ export default async function ProjectPage({
             // The map returns MasonryItem objects carrying an explicit
             // `key`, which Masonry applies to the element it renders.
             items={project.media.map((item, i) => {
-              // biome-ignore lint/correctness/useJsxKeyInIterable: keyed by Masonry via item.key
-              const frame = <CaseFrame media={item} priority={i === 0} />
+              const frame = (
+                // biome-ignore lint/correctness/useJsxKeyInIterable: keyed by Masonry via item.key
+                <CaseFrame media={item} labels={t.media} priority={i === 0} />
+              )
               const caption = item.caption && <Caption {...item.caption} />
 
               return {
@@ -310,7 +321,7 @@ export default async function ProjectPage({
               to="contact"
               className="t-meta inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-semibold text-accent-ink transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring)] focus-visible:outline-offset-2"
             >
-              Start a project
+              {t.startProject}
               <IconArrowRight size={15} aria-hidden />
             </SectionLink>
           </div>

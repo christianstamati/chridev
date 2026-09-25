@@ -6,8 +6,8 @@ export const Contact: GlobalConfig = {
   access: { read: () => true },
   hooks: { afterChange: [revalidateGlobal] },
   fields: [
-    { name: "heading", type: "text", required: true },
-    { name: "blurb", type: "textarea", required: true },
+    { name: "heading", type: "text", required: true, localized: true },
+    { name: "blurb", type: "textarea", required: true, localized: true },
     { name: "email", type: "email", required: true },
     {
       name: "socials",

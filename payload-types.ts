@@ -98,7 +98,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'it') | ('en' | 'it')[];
   globals: {
     profile: Profile;
     resume: Resume;
@@ -109,7 +109,7 @@ export interface Config {
     resume: ResumeSelect<false> | ResumeSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'it';
   widgets: {
     collections: CollectionsWidget;
     'collection-query': CollectionQueryWidget;
