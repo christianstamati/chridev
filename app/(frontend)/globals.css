@@ -225,6 +225,39 @@
     .card-reveal { opacity: 1; translate: 0 0; }
 }
 
+/* Pane progress bars. Where the browser can tie an animation to a scroll
+   position, the bar is a scroll-driven animation. That runs on the compositor,
+   in step with the scroll itself, including a phone's momentum scroll, which
+   the main thread only hears about late and in bursts. A JS-driven bar trailed
+   and stuttered there. The scroller names the timeline, and the section above
+   it widens the name's scope so the bar, a sibling, can see it. Each pane's
+   section scopes its own --pane, so the two bars never cross.
+
+   Elsewhere (Firefox, for now) useScrollProgress sets the scale from JS. */
+.pane-progress {
+    transform-origin: left;
+    scale: 0 1;
+}
+
+@supports (animation-timeline: scroll()) {
+    .pane-progress-scope  { timeline-scope: --pane; }
+    .pane-progress-source { scroll-timeline: --pane y; }
+
+    .pane-progress {
+        /* A pane with nothing to scroll has an inactive timeline, and the
+           animation then has no effect. This shows instead: a full bar, as
+           the JS path reports. */
+        scale: 1 1;
+        animation: pane-progress auto linear both;
+        animation-timeline: --pane;
+    }
+}
+
+@keyframes pane-progress {
+    from { scale: 0 1; }
+    to   { scale: 1 1; }
+}
+
 /* Shared-element morph between a grid tile and its case-study lead image.
    `share="morph"` on both <ViewTransition>s assigns this class, so these
    rules target only that pair, not every navigation. */

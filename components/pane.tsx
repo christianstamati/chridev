@@ -22,23 +22,24 @@ export function Pane({
   className,
   showProgress = true,
 }: PaneProps) {
-  const { ref, progress } = useScrollProgress<HTMLDivElement>()
+  const { ref, bar } = useScrollProgress<HTMLDivElement>()
 
   return (
     <section
       aria-label={label}
-      className={cn("relative min-h-0 overflow-hidden", className)}
+      className={cn(
+        "pane-progress-scope relative min-h-0 overflow-hidden",
+        className
+      )}
     >
       {showProgress && (
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 z-20 h-(--progress-h)"
         >
-          <div
-            className="h-full origin-left bg-accent transition-[transform] duration-100 ease-out"
-            // scaleX rather than width: composited, so it stays smooth under fast scroll.
-            style={{ transform: `scaleX(${progress})` }}
-          />
+          {/* Scaled rather than sized: composited, so it keeps up with a fast
+              scroll. The scale comes from globals.css or, failing that, JS. */}
+          <div ref={bar} className="pane-progress h-full bg-accent" />
         </div>
       )}
 
@@ -51,7 +52,7 @@ export function Pane({
         // `outline-hidden` (not `outline-none`) keeps a transparent outline in
         // forced-colors mode, where box-shadow rings are dropped entirely.
         // --focus-ring is full-contrast ink in both themes (WCAG 1.4.11).
-        className="pane h-full overflow-y-auto overscroll-contain outline-hidden focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-inset"
+        className="pane pane-progress-source h-full overflow-y-auto overscroll-contain outline-hidden focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-inset"
       >
         {children}
       </div>
